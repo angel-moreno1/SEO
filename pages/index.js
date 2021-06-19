@@ -12,7 +12,7 @@ export default function Home() {
         <meta property="og:description" content="Get from Seo newbie to SEO pro in 8 simples steps."/>
         <meta property="og:url" content="https://seo-beta.vercel.app" />
         <meta property="og:type" content="SEO" />
-        <meta property="og:image" content="https://th.bing.com/th/id/OIP.bZ4lF8-6YY4BTOYtcyDDpQHaEf?pid=ImgDet&rs=1"/>
+        <meta property="og:image" content="https://ahrefs.com/blog/wp-content/uploads/2019/12/fb-how-to-become-an-seo-expert.png"/>
         <link rel="icon" href="/favicon.ico"/>
       </Head>
 
