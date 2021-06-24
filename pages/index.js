@@ -73,7 +73,7 @@ export default function Home() {
         </Heading>
       </HStack>
       <Text textAlign="center" h="20px" mt={4}>{isValidating && "Validating data..."}</Text>
-      <Box w="60%" mx="auto" >
+      <Box >
         <VStack p={10}>
           <FormControl id="text">
             <FormLabel>Text</FormLabel>
