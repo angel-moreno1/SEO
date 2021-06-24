@@ -145,7 +145,7 @@ export default function Home() {
         <AlertDialogOverlay>
           <AlertDialogContent>
             <AlertDialogHeader fontSize="lg" fontWeight="bold">
-              Delete Customer
+              Delete Comment
             </AlertDialogHeader>
 
             <AlertDialogBody>
