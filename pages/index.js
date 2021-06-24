@@ -84,7 +84,7 @@ export default function Home() {
             <Input type="text" />
             <FormHelperText>If status False no one can&apos;t see that comment</FormHelperText>
           </FormControl>
-          <Button onClick={handleCreateComment} type="submit" colorScheme="messenger">
+          <Button aria-label="create" onClick={handleCreateComment} type="submit" colorScheme="messenger">
             create
           </Button>
         </VStack>
@@ -125,7 +125,7 @@ export default function Home() {
                 <Td>{text}</Td>
                 <Td>
                   {id && status ? (
-                    <Button onClick={onClickDeleteButton(id)} colorScheme="red">
+                    <Button aria-label="delete" onClick={onClickDeleteButton(id)} colorScheme="red">
                       <DeleteIcon w={5} h={5} color="red.100"/>
                     </Button>
                   ) : (

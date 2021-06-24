@@ -5,8 +5,8 @@ import Document, { Html, Head, Main, NextScript } from 'next/document'
 class MyDocuments extends Document {
     render(){
         return (
-            <Html>
-                <Head>
+            <Html lang="en">
+                <Head >
                     <meta name="description" content="Get from Seo newbie to SEO pro in 8 simples steps." />
                     <meta property="og:url" content="https://seo-beta.vercel.app/" />
                     <meta property="og:type" content="website" />
