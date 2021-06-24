@@ -1,80 +1,168 @@
+import { useMemo, useRef, useState } from 'react'
+import NextLink from 'next/link'
 import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import useSwr from 'swr'
+import { Box, HStack, Link, Heading, VStack } from '@chakra-ui/layout'
+import { Table, Tbody, TableCaption, Thead, Tr, Th, Td } from '@chakra-ui/table'
+import { Skeleton } from '@chakra-ui/skeleton'
+import { FormControl, FormLabel, FormHelperText } from '@chakra-ui/form-control'
+import { Input } from '@chakra-ui/input'
+import { Button } from '@chakra-ui/button'
+import { Text } from '@chakra-ui/layout'
+import { DeleteIcon } from '@chakra-ui/icons'
+import { AlertDialog, AlertDialogOverlay, AlertDialogContent, AlertDialogHeader, AlertDialogFooter, AlertDialogBody } from '@chakra-ui/modal'
+import { Spinner } from '@chakra-ui/spinner'
+
 
 export default function Home() {
+  const { 
+    data: comments,
+    error,
+    isValidating,
+    mutate,
+    revalidate 
+  } = useSwr('http://localhost:3000/api/comments', (...args) => fetch(...args).then(res => res.json()), {  revalidateOnFocus: false })
+
+  const [ text, setText ] = useState('')
+  const [ status, setStatus ] = useState(false)
+  const [ isOpen, setIsOpen ] = useState(false)
+  const [ currentDeleteId, setDeleteId] = useState('')
+  const cancelRef = useRef()
+  
+  const handleTextChange = ({ target: { value } }) => setText(value)
+  
+  const onClickDeleteButton = id => () => {
+    setIsOpen(true)
+    setDeleteId(id)
+  }
+
+  const onClose = () => setIsOpen(false)
+  
+  const onDeleteComment = () => {
+    mutate(comments?.filter( ({ id }) => id !== currentDeleteId), false)
+    onClose()
+    fetch("http://localhost:3000/api/comments", {
+        method: 'DELETE',
+        body: JSON.stringify({id: currentDeleteId})
+      }).then(r => revalidate())
+  }
+
+  const handleCreateComment = () => {
+    mutate([{ text: text, status: true}, ...comments ], false)
+    if(text) {
+      fetch("http://localhost:3000/api/comments", {
+        method: 'POST',
+        body: JSON.stringify({text, status: true})
+      }).then(r => r.json()).then( () => revalidate());
+    }
+  }
+
   return (
-    <div className={styles.container}>
+    <Box>
       <Head>          
-        <title>How to Become an SEO Expert (9 Steps)</title>
-        <meta name="description" content="Get from Seo newbie to SEO pro in 8 simples steps." />
-        <meta property="og:url" content="https://seo-beta.vercel.app/" />
-        <meta property="og:type" content="website" />
-        <meta property="og:title" content="How to Become an SEO Expert (9 Steps)" />
-        <meta property="og:description" content="Get from Seo newbie to SEO pro in 8 simples steps." />
-        <meta property="og:image" content="https://ahrefs.com/blog/wp-content/uploads/2019/12/fb-how-to-become-an-seo-expert.png" />
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta property="twitter:domain" content="seo-beta.vercel.app" />
-        <meta property="twitter:url" content="https://seo-beta.vercel.app/" />
-        <meta name="twitter:title" content="How to Become an SEO Expert (9 Steps)" />
-        <meta name="twitter:description" content="Get from Seo newbie to SEO pro in 8 simples steps." />
-        <meta name="twitter:image" content="https://ahrefs.com/blog/wp-content/uploads/2019/12/fb-how-to-become-an-seo-expert.png" />
-        <link rel="icon" href="/favicon.ico"/>
+        <title>Home</title>
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
+      <HStack p={5} w="100%" h="10vh" bg="twitter.400" color="white">
+        <Heading as="h4">
+          <NextLink href={"/dashboard"} passHref>
+            <Link>
+              Dashboard
+            </Link>
+          </NextLink>
+        </Heading>
+      </HStack>
+      <Text textAlign="center" h="20px" mt={4}>{isValidating && "Validating data..."}</Text>
+      <Box w="60%" mx="auto" >
+        <VStack p={10}>
+          <FormControl id="text">
+            <FormLabel>Text</FormLabel>
+            <Input value={text} onChange={handleTextChange} type="text" />
+          </FormControl>
+          <FormControl id="status">
+            <FormLabel>Status</FormLabel>
+            <Input type="text" />
+            <FormHelperText>If status False no one can&apos;t see that comment</FormHelperText>
+          </FormControl>
+          <Button onClick={handleCreateComment} type="submit" colorScheme="messenger">
+            create
+          </Button>
+        </VStack>
+      </Box>
 
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
 
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
+      <Table variant="striped" mt={10} size="md" w="60%" mx="auto">
+          <TableCaption>All Comments</TableCaption>
+          <Thead>
+            <Tr>
+              <Th isNumeric>id</Th>
+              <Th>text</Th>
+              <Th>estatus</Th>
+            </Tr>
+          </Thead>
+          <Tbody>
+            {!comments && !error ? 
+              [1, 2, 3].map((index) => <Tr key={index}>
+                  <Td>
+                    <Skeleton colorScheme="gray">
+                      Some text here
+                    </Skeleton>
+                  </Td>
+                  <Td>
+                    <Skeleton>
+                      Some text here
+                    </Skeleton>
+                  </Td>
+                  <Td>
+                    <Skeleton>
+                      Some text here
+                    </Skeleton>
+                  </Td>
+                </Tr>
+            ) : comments?.map(({ id, text, status}, index) => (
+              <Tr key={id ? id : index} >
+                <Td isNumeric>{id ? id :  <Spinner />}</Td>
+                <Td>{text}</Td>
+                <Td>
+                  {id && status ? (
+                    <Button onClick={onClickDeleteButton(id)} colorScheme="red">
+                      <DeleteIcon w={5} h={5} color="red.100"/>
+                    </Button>
+                  ) : (
+                    !status ? status.toString : <Spinner />
+                  )}
+                </Td>
+              </Tr>
+            ))}
+           
+          </Tbody>
+      </Table>
+      <AlertDialog
+        isOpen={isOpen}
+        leastDestructiveRef={cancelRef}
+        onClose={onClose}
+      >
+        <AlertDialogOverlay>
+          <AlertDialogContent>
+            <AlertDialogHeader fontSize="lg" fontWeight="bold">
+              Delete Customer
+            </AlertDialogHeader>
 
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
+            <AlertDialogBody>
+              Are you sure? You can&lsquo;t undo this action afterwards.
+            </AlertDialogBody>
 
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
-    </div>
+            <AlertDialogFooter>
+              <Button ref={cancelRef} onClick={onClose}>
+                Cancel
+              </Button>
+              <Button colorScheme="red" onClick={onDeleteComment} ml={3}>
+                Delete
+              </Button>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialogOverlay>
+      </AlertDialog>
+    </Box>
   )
 }
