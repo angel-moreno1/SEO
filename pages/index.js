@@ -21,7 +21,7 @@ export default function Home() {
     isValidating,
     mutate,
     revalidate 
-  } = useSwr('http://localhost:3000/api/comments', (...args) => fetch(...args).then(res => res.json()), {  revalidateOnFocus: false })
+  } = useSwr('https://seo-beta.vercel.app/api/comments', (...args) => fetch(...args).then(res => res.json()), {  revalidateOnFocus: false })
 
   const [ text, setText ] = useState('')
   const [ status, setStatus ] = useState(false)
@@ -41,7 +41,7 @@ export default function Home() {
   const onDeleteComment = () => {
     mutate(comments?.filter( ({ id }) => id !== currentDeleteId), false)
     onClose()
-    fetch("http://localhost:3000/api/comments", {
+    fetch("https://seo-beta.vercel.app/api/comments", {
         method: 'DELETE',
         body: JSON.stringify({id: currentDeleteId})
       }).then(r => revalidate())
@@ -50,7 +50,7 @@ export default function Home() {
   const handleCreateComment = () => {
     mutate([{ text: text, status: true}, ...comments ], false)
     if(text) {
-      fetch("http://localhost:3000/api/comments", {
+      fetch("https://seo-beta.vercel.app/api/comments", {
         method: 'POST',
         body: JSON.stringify({text, status: true})
       }).then(r => r.json()).then( () => revalidate());
