@@ -21,7 +21,7 @@ export default function Home() {
     isValidating,
     mutate,
     revalidate 
-  } = useSwr('https://seo-beta.vercel.app/api/comments', (...args) => fetch(...args).then(res => res.json()), {  revalidateOnFocus: false })
+  } = useSwr('https://seo-beta.vercel.app/api/comments', (...args) => fetch(...args).then(res => res.json()))
 
   const [ text, setText ] = useState('')
   const [ status, setStatus ] = useState(false)
