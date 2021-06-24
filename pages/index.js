@@ -91,7 +91,7 @@ export default function Home() {
       </Box>
 
 
-      <Table variant="striped" mt={10} size="md" w="60%" mx="auto">
+      <Table variant="striped" mt={10} size="md">
           <TableCaption>All Comments</TableCaption>
           <Thead>
             <Tr>
