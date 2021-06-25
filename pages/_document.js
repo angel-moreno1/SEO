@@ -20,6 +20,7 @@ class MyDocuments extends Document {
                     <meta name="twitter:description" content="Get from Seo newbie to SEO pro in 8 simples steps." />
                     <meta name="twitter:image" content="https://ahrefs.com/blog/wp-content/uploads/2019/12/fb-how-to-become-an-seo-expert.png" />
                     <link rel="icon" href="/favicon.ico"/>
+                    <meta name="google-site-verification" content="J-SFWO4rGAtWZHblUT_SvxkSM8Y-QhqL2PutneuAebc" />
                     {/* <link ref="stylesheet" type='text/css' href="../public/nprogress.css" ></link> */}
                 </Head>
                 <body>
